@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+<div id="app">
+    <button @click="calc()">计算</button>
+</div>
+</body>
+<script src="https://npmcdn.com/vue@1.0.26/dist/vue.min.js"></script>
+<script type="text/javascript">
+    new Vue({
+        el: '#app',
+        data: {
+            monthInput: 10000,
+            housingFundRadio: 0.12,
+            houseTotalPrice: 40 * 10000,
+            downPaymentRadio: 0.3,
+            housePaymentMonth: 30 * 12,
+            housePaymentMonthRadio: 0.049 / 12,
+            consumerOutput: 10000,
+            years: 3,
+            deposit: 100000,
+            companyPayment: 300000,
+            yearlyBonusInput: 10000,
+            yearlyCompanyPaymentOutput: 5000,
+            companyPaymentOutputMonth: 3,
+            yearlyBonusInputMonth: 2,
+            currentMonth: new Date().getMonth() + 1,
+            totalBalance: 0
+        },
+        created() {
+            this.totalBalance = this.deposit + this.companyPayment;
+        },
+        computed: {
+            months() {
+                return this.years * 12;
+            },
+            houseOutput() {
+                return (this.housePayment * this.housePaymentMonthRadio * Math.pow(1 + this.housePaymentMonthRadio, this.housePaymentMonth) ) / (Math.pow(1 + this.housePaymentMonthRadio, this.housePaymentMonth) - 1);
+            },
+            houseDownPayment() {
+                return this.houseTotalPrice * this.downPaymentRadio;
+            },
+            housePayment() {
+                return this.houseTotalPrice - this.houseDownPayment;
+            },
+            monthOutput() {
+                return this.houseOutput + this.consumerOutput;
+            },
+            monthBalance() {
+                return this.monthInput - this.monthOutput;
+            }
+        },
+        methods: {
+            calc() {
+                this.refreshTotalBalance(-this.houseDownPayment);
+
+                console.log(this.currentMonth, this.houseDownPayment, this.totalBalance, this.totalBalance);
+
+                this.nextMonth();
+
+                for (let i = 2; i < this.months; i++) {
+                    this.refreshTotalBalance(this.monthBalance);
+                    console.log(this.currentMonth, this.monthOutput, this.monthBalance, this.totalBalance);
+                    this.nextMonth();
+                }
+            },
+            nextMonth() {
+                this.currentMonth++;
+
+                if (this.currentMonth > 12) {
+                    this.currentMonth = 1;
+                }
+            },
+            refreshTotalBalance(pay) {
+                this.totalBalance = this.totalBalance + pay;
+
+                if (this.currentMonth === this.companyPaymentOutputMonth) {
+                    this.totalBalance = this.totalBalance - this.yearlyCompanyPaymentOutput;
+                }
+
+                if (this.currentMonth === this.yearlyBonusInputMonth) {
+                    this.totalBalance = this.totalBalance + this.yearlyBonusInput;
+                }
+            }
+        }
+    });
+</script>
+
+</html>
