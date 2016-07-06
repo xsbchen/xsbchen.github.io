@@ -4,6 +4,17 @@
 <body>
 <div id="app">
     <button @click="calc()">计算</button>
+    <table>
+        <tr>
+            <th>月份</th>
+            <th>支出</th>
+            <th>月结余</th>
+            <th>总结余</th>
+        </tr>
+        <tr v-for="item in list">
+            <td v-for="value in item">{{ value }}</td>
+        </tr>
+    </table>
 </div>
 </body>
 <script src="https://npmcdn.com/vue@1.0.26/dist/vue.min.js"></script>
@@ -26,7 +37,8 @@
             companyPaymentOutputMonth: 3,
             yearlyBonusInputMonth: 2,
             currentMonth: new Date().getMonth() + 1,
-            totalBalance: 0
+            totalBalance: 0,
+            list: []
         },
         created() {
             this.totalBalance = this.deposit + this.companyPayment;
@@ -53,15 +65,16 @@
         },
         methods: {
             calc() {
+                this.list = [];
                 this.refreshTotalBalance(-this.houseDownPayment);
 
-                console.log(this.currentMonth, this.houseDownPayment, this.totalBalance, this.totalBalance);
+                this.list.push([this.currentMonth, this.houseDownPayment, this.totalBalance, this.totalBalance]);
 
                 this.nextMonth();
 
                 for (let i = 2; i < this.months; i++) {
                     this.refreshTotalBalance(this.monthBalance);
-                    console.log(this.currentMonth, this.monthOutput, this.monthBalance, this.totalBalance);
+                    this.list.push([this.currentMonth, this.monthOutput, this.monthBalance, this.totalBalance]);
                     this.nextMonth();
                 }
             },
